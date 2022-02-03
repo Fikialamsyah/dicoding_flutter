@@ -1,9 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:news_app/article.dart';
 import 'package:news_app/detail_page.dart';
+import 'package:news_app/styles.dart';
 import 'package:news_app/web_view.dart';
+import 'widgets/list_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,6 +15,25 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'News App',
       theme: ThemeData(
+        colorScheme: Theme.of(context).colorScheme.copyWith(
+          primary: primaryColor,
+          onPrimary: Colors.black,
+          secondary: secondaryColor
+        ),
+        textTheme: myTextTheme,
+        appBarTheme: AppBarTheme(elevation: 0),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            primary: secondaryColor,
+            onPrimary: Colors.white,
+            textStyle: TextStyle(),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(0)
+              )
+            )
+          ),
+        ),
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
@@ -29,51 +48,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class NewsListPage extends StatelessWidget {
-  static const routeName = '/article_list';
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('News App'),
-      ),
-      body: FutureBuilder<String>(
-        future: DefaultAssetBundle.of(context).loadString('assets/article.json'),
-        builder: (context, snapshot){
-          final List<Article> articles = parseArticles(snapshot.data);
-          return ListView.builder(
-            itemCount: articles.length,
-            itemBuilder: (context, index){
-              return _buildArticleItem(context, articles[index]);
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildArticleItem(BuildContext context, Article article) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      leading: Image.network(
-        article.urlToImage,
-        width: 100,
-      ),
-      title: Text(article.title),
-      subtitle: Text(article.author),
-      onTap: (){
-        Navigator.pushNamed(context, ArticleDetailPage.routeName, arguments: article);
-      },
-    );
-  }
-
-   List<Article> parseArticles(String? json){
-    if(json == null){
-      return [];
-    }
-
-    final List parsed = jsonDecode(json);
-    return parsed.map((json) => Article.fromJson(json)).toList();
-  }
-}
