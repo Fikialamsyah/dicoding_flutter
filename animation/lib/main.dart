@@ -1,3 +1,5 @@
+import 'package:animation/explicit_page.dart';
+import 'package:animation/implicit_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -9,25 +11,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: AnimationPage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => AnimationPage(),
+        '/implicitPage': (context) => ImplicitPage(),
+        '/explicitPage':(context) => ExplicitPage()
+      },
     );
   }
 }
 
-class AnimationPage extends StatefulWidget {
-  const AnimationPage({Key? key}) : super(key: key);
-
-  @override
-  State<AnimationPage> createState() => _AnimationPageState();
-}
-
-class _AnimationPageState extends State<AnimationPage> {
-  bool _isBig = false;
-  double _size = 100.0;
-
-  Tween<double> _animationTween = Tween(begin: 0, end: pi *2);
-
-  Tween _colorTween = ColorTween(begin: Colors.blue, end: Colors.purple);
+class AnimationPage extends StatelessWidget {
+  const AnimationPage({ Key? key }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,50 +32,16 @@ class _AnimationPageState extends State<AnimationPage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, 
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-          AnimatedContainer(
-            duration: Duration(seconds: 1),
-            color: Colors.blue,
-              height: _size,
-              width: _size,
-          ),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _size = _isBig ? 200 : 100;
-                  _isBig = !_isBig;
-                });
-              },
-              child: Text('Animate')
-          ),
-          SizedBox(height: 40,),
-          TweenAnimationBuilder(
-            tween: _animationTween,
-            duration: Duration(seconds: 3),
-            builder: (context,double value, child) {
-              return Transform.rotate(
-                angle: value,
-                child: Container(
-                  color: Colors.blue,
-                  height: _size,
-                  width: _size,
-                ),
-              );
-            }),
-            SizedBox(height: 40,),
-          TweenAnimationBuilder<Color?>(
-            tween: _colorTween as ColorTween,
-            duration: Duration(seconds: 3),
-            builder: (context, Color? value, child){
-              return Container(
-                color: value,
-                height: _size,
-                width: _size,
-              );
-            },
-          )
-        ]),
+            ElevatedButton(onPressed: (){
+              Navigator.pushNamed(context, '/implicitPage');
+            }, child: Text('Implicit Animation')),
+            ElevatedButton(onPressed: (){
+              Navigator.pushNamed(context, '/explicitPage');
+            }, child: Text('Explicit Animation'))
+          ],
+        )
       ),
     );
   }
